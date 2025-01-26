@@ -1,11 +1,11 @@
-import { useCallback, createContext, ReactNode, useEffect, useState } from "react";
-import { UserResponse } from "@/constants/types/userTypes";
-import { OrganizationResponse } from "@/constants/types/organizationTypes";
-import { getCurrentUser } from "@/services/userService";
-import { getOrganization } from "@/services/organizationService";
-import { getErrorMessage } from "~/utils/errorHandler.ts";
+import {createContext, ReactNode, useCallback, useEffect, useState} from "react";
+import {UserResponse} from "@/constants/types/userTypes";
+import {OrganizationResponse} from "@/constants/types/organizationTypes";
+import {getUser} from "@/services/userService";
+import {getOrganization} from "@/services/organizationService";
+import {getErrorMessage} from "~/utils/errorHandler.ts";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { toast } from "@/components/ui/use-toast";
+import {toast} from "@/components/ui/use-toast";
 
 type UserContextType = {
   user: UserResponse | null;
@@ -54,7 +54,7 @@ export const UserContextProvider = ({ children}: UserContextProviderType) => {
   useEffect(() => {
     if (isAuthenticated()) {
       // Fetch user data
-      getCurrentUser()
+      getUser()
           .then((data: UserResponse) => setUser(data))
           .catch((error) => {
             const errorMessage = getErrorMessage(error);

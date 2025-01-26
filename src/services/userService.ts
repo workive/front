@@ -1,6 +1,12 @@
 import axiosInstance from './httpService';
-import {UserCreateRequest, UserResponse, UserUpdateRequest, ChangePasswordRequest, AssetResponse} from "@/constants/types/userTypes";
-import {PagedResponse} from  '@/constants/types/commonTypes'
+import {
+    AssetResponse,
+    ChangePasswordRequest,
+    UserCreateRequest,
+    UserResponse,
+    UserUpdateRequest
+} from "@/constants/types/userTypes";
+import {PagedResponse} from '@/constants/types/commonTypes'
 
 const baseURL = '/users';
 
@@ -16,8 +22,8 @@ async function getUsers(pageNumber: number, pageSize: number): Promise<PagedResp
     return response.data;
 }
 
-async function getCurrentUser(): Promise<UserResponse> {
-    const response = await axiosInstance.get(`${baseURL}/mine`);
+async function getUser(userId: string = 'mine'): Promise<UserResponse> {
+    const response = await axiosInstance.get(`${baseURL}/${userId}`);
     return response.data;
 }
 
@@ -26,8 +32,8 @@ async function deleteUser(id: string) {
     return response.data;
 }
 
-async function updateUser(userId: number | null = null, payload: UserUpdateRequest): Promise<UserResponse> {
-    const response = await axiosInstance.patch(`${baseURL}/${userId ? userId : 'mine'}`, payload);
+async function updateUser(userId: string = 'mine', payload: UserUpdateRequest): Promise<UserResponse> {
+    const response = await axiosInstance.patch(`${baseURL}/${userId}`, payload);
     return response.data;
 }
 
@@ -53,4 +59,4 @@ async function createAssets(bucket: string, files: File[]): Promise<AssetRespons
     return response.data;
 }
 
-export {updateUserPassword, updateUser, deleteUser, getUsers, getCurrentUser, createUser, createAssets}
+export {updateUserPassword, updateUser, deleteUser, getUsers, getUser, createUser, createAssets}

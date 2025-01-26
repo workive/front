@@ -14,6 +14,7 @@ import {
 } from './Users'
 import {AuthenticatedRoute} from "../core/components"
 import UpdateLeavePolicy from "@/modules/Leaves/Pages/UpdateLeavePolicy.tsx";
+import UserUpdatePage from "@/modules/Users/Pages/UserUpdatePage.tsx";
 
 export default function Root() {
     return (
@@ -39,6 +40,8 @@ export default function Root() {
                 <Route path='/profile' element={<AuthenticatedRoute><Profile/></AuthenticatedRoute>}></Route>
                 <Route path='/employee/create'
                        element={<AuthenticatedRoute><CreateEmployee/></AuthenticatedRoute>}></Route>
+                <Route path='/employee/update/:id'
+                       element={<AuthenticatedRoute><UserUpdatePage/></AuthenticatedRoute>}></Route>
                 <Route path='/organization'
                        element={<AuthenticatedRoute><OrganizationPage/></AuthenticatedRoute>}></Route>
                 <Route path='/leaves' element={<AuthenticatedRoute><LeavesPage/></AuthenticatedRoute>}></Route>

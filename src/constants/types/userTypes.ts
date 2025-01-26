@@ -23,6 +23,7 @@ export type UserUpdateRequest = {
     phone?: string | null;
     avatarAssetId?: number;
     leavePolicyId?: number;
+    teamId?: number;
 }
 
 export type ChangePasswordRequest = {

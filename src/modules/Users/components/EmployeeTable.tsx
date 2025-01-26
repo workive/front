@@ -4,20 +4,22 @@ import {TableBody, TableCell, TableRow} from "@/components/ui/table.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Pencil, Trash} from "lucide-react";
 import {Avatar} from "@/core/components";
+import {useNavigate} from "react-router-dom";
 
 type EmployeeTableProps = {
     employeesList: UserResponse[];
     setSelectedEmployee: (employee: UserResponse | null) => void;
     setCurrentEmployee: (employee: UserResponse) => void;
-    setIsUpdateDialogOpen: (open: boolean) => void;
 };
 
-export function EmployeeTable({employeesList, setSelectedEmployee, setCurrentEmployee, setIsUpdateDialogOpen,}: EmployeeTableProps) {
+export function EmployeeTable({employeesList, setSelectedEmployee, setCurrentEmployee}: EmployeeTableProps) {
+    const navigate = useNavigate();
+
     return (
         <TableBody>
             {employeesList.map((employee) => (
                 <TableRow key={employee.id} className="items-center">
-                    <TableCell>
+                    <TableCell className='flex items-center'>
                         <Avatar avatar={employee?.avatar} avatarSize={32}/>
                         <span className="text-sm font-medium ml-2">{employee.firstName} {employee.lastName}</span>
                     </TableCell>
@@ -31,7 +33,7 @@ export function EmployeeTable({employeesList, setSelectedEmployee, setCurrentEmp
                                 size="sm"
                                 onClick={() => {
                                     setCurrentEmployee(employee);
-                                    setIsUpdateDialogOpen(true);
+                                    navigate(`/employee/update/${employee.id}`);
                                 }}
                             >
                                 <Pencil className="h-4" />

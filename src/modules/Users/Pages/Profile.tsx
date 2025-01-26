@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {useForm, UseFormReturn} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {z} from "zod"
-import {getCurrentUser, updateUser} from "@/services/userService";
+import {getUser, updateUser} from "@/services/userService";
 import {getErrorMessage} from "~/utils/errorHandler.ts"
 import {AssetResponse, UserUpdateRequest} from '@/constants/types/userTypes'
 import {Camera} from "lucide-react"
@@ -48,7 +48,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const user = await getCurrentUser();
+                const user = await getUser();
                 setUser(user);
                 reset({
                     firstName: user.firstName,
