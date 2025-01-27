@@ -1,18 +1,26 @@
-import {HolidayResponse, HolidaysCreateRequest, FetchedPublicHoliday} from "@/constants/types/holidayTypes";
+import {
+    FetchedPublicHoliday,
+    HolidayOverviewResponse,
+    HolidayResponse,
+    HolidaysCreateRequest
+} from "@/constants/types/holidayTypes";
 import axiosInstance from "./httpService";
 
 const baseURL = '/holidays';
 
-async function getHolidays(year: number, country: string): Promise<HolidayResponse[]> {
-    const response = await axiosInstance.get(baseURL, {
-        params: {year, country}
-    })
+async function getHolidaysOverview(): Promise<HolidayOverviewResponse[]> {
+    const response = await axiosInstance.get(baseURL)
     return response.data;
 }
 
-async function fetchHolidays(year: number, country: string): Promise<FetchedPublicHoliday[]> {
+async function getHolidays(year: number, countryCode: string): Promise<HolidayResponse[]> {
+    const response = await axiosInstance.get(`${baseURL}/${countryCode}/${year}`)
+    return response.data;
+}
+
+async function fetchHolidays(year: number, countryCode: string): Promise<FetchedPublicHoliday[]> {
     const response = await axiosInstance.get(`${baseURL}/fetch`, {
-        params: {year, country}
+        params: {year, countryCode}
     })
     return response.data;
 }
@@ -22,4 +30,4 @@ async function createHolidays(payload: HolidaysCreateRequest[]): Promise<Holiday
     return response.data;
 }
 
-export {getHolidays, fetchHolidays, createHolidays}
+export {getHolidaysOverview, fetchHolidays, createHolidays, getHolidays}

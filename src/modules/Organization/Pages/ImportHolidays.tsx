@@ -1,40 +1,47 @@
-import { ChevronLeft } from "lucide-react";
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { countries } from "@/constants/countries";
-import { UserContext } from "@/contexts/UserContext";
-import { fetchHolidays, createHolidays } from "@/services/holidayService";
-import { FetchedPublicHoliday } from "@/constants/types/holidayTypes";
-import { toast } from "@/components/ui/use-toast";
-import { getErrorMessage } from "~/utils/errorHandler.ts";
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Card} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {countries} from "@/constants/countries";
+import {createHolidays, fetchHolidays} from "@/services/holidayService";
+import {FetchedPublicHoliday} from "@/constants/types/holidayTypes";
+import {toast} from "@/components/ui/use-toast";
+import {getErrorMessage} from "~/utils/errorHandler.ts";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
+import {PageHeader} from "@/core/components";
 
 export default function ImportHolidays() {
-    const { user } = useContext(UserContext);
     const [holidays, setHolidays] = useState<FetchedPublicHoliday[]>([]);
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-    const [selectedCountry, setSelectedCountry] = useState<string>(user?.country || "AT");
+    const [selectedCountry, setSelectedCountry] = useState<string>("");
     const [selectedHolidays, setSelectedHolidays] = useState<string[]>([]);
     const [selectAll, setSelectAll] = useState(false);
     const navigate = useNavigate();
-    const goBack = () => navigate('/settings/official-holidays');
 
-    const fetchHolidaysList = () => {
-        fetchHolidays(selectedYear, selectedCountry)
-            .then((data: FetchedPublicHoliday[]) => {
-                setHolidays(data);
-            })
-            .catch((error) => {
-                const errorMessage = getErrorMessage(error);
-                toast({
-                    title: "Error",
-                    description: errorMessage,
-                    variant: "destructive"
-                });
+    const fetchHolidaysList = async () => {
+        if (!selectedCountry) {
+            toast({
+                title: "Error",
+                description: "Please select a country.",
+                variant: "destructive",
             });
+            return;
+        }
+
+        try {
+            const data = await fetchHolidays(selectedYear, selectedCountry);
+            setHolidays(data);
+            setSelectedHolidays([]);
+            setSelectAll(false);
+        } catch (error) {
+            const errorMessage = getErrorMessage(error as Error);
+            toast({
+                title: "Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
+        }
     };
 
     const toggleHolidaySelection = (date: string) => {
@@ -48,37 +55,31 @@ export default function ImportHolidays() {
         setSelectedHolidays(selectAll ? [] : holidays.map((holiday) => holiday.date));
     };
 
-    const saveSelectedHolidays = () => {
+    const saveSelectedHolidays = async () => {
         const payload = holidays
-            .filter(holiday => selectedHolidays.includes(holiday.date))
-            .map(holiday => ({
+            .filter((holiday) => selectedHolidays.includes(holiday.date))
+            .map((holiday) => ({
                 description: holiday.name,
                 date: holiday.date,
                 country: selectedCountry,
             }));
 
-        createHolidays(payload)
-            .then(() => {
-                navigate('/settings/official-holidays');
-            })
-            .catch((error: any) => {
-                const errorMessage = getErrorMessage(error);
-                toast({
-                    title: "Error",
-                    description: errorMessage,
-                    variant: "destructive",
-                });
+        try {
+            await createHolidays(payload);
+            navigate('/settings/official-holidays');
+        } catch (error) {
+            const errorMessage = getErrorMessage(error as Error);
+            toast({
+                title: "Error",
+                description: errorMessage,
+                variant: "destructive",
             });
+        }
     };
 
     return (
         <>
-            <div className="flex flex-wrap text-lg font-medium px-4 pt-4 gap-2">
-                <button onClick={goBack}>
-                    <ChevronLeft className="h-6 w-6" />
-                </button>
-                <h1 className="text-lg font-semibold md:text-2xl">Import Holidays</h1>
-            </div>
+            <PageHeader backButton='/settings/official-holidays' title='Import Holidays'></PageHeader>
 
             <main className="flex flex-1 flex-col gap-4 p-4">
                 <Card className="flex flex-1 flex-col rounded-lg border border-dashed shadow-sm p-4">
@@ -98,7 +99,7 @@ export default function ImportHolidays() {
                                 label="Country"
                                 value={selectedCountry}
                                 options={countries.map((country) => ({label: country.name, value: country.code,}))}
-                                onChange={setSelectedCountry}
+                                onChange={(value) => setSelectedCountry(value)}
                             />
                         </div>
 

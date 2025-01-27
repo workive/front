@@ -16,3 +16,9 @@ export type HolidayResponse = {
     date: string;
     country: string
 }
+
+export type HolidayOverviewResponse = {
+    count: number;
+    year: number;
+    countryCode: string
+}
